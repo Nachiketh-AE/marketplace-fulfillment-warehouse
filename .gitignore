@@ -1,0 +1,24 @@
+# Environment / secrets
+.env
+
+# Generated datasets (regenerate with the documented commands)
+data/generated/
+*.csv.gz
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# dbt
+marketplace_warehouse/target/
+marketplace_warehouse/logs/
+marketplace_warehouse/dbt_packages/
+marketplace_warehouse/profiles.yml
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

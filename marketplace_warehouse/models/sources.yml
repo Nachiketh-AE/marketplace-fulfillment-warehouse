@@ -1,0 +1,22 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: >
+      Source-shaped synthetic tables loaded by the Python generator (TAD 6).
+      All business/event IDs are deterministic UUIDv5 values.
+    tables:
+      - name: raw_customers
+      - name: raw_providers
+      - name: raw_service_categories
+      - name: raw_locations
+      - name: raw_provider_service_eligibility
+      - name: raw_bookings
+      - name: raw_booking_status_events
+      - name: raw_booking_reschedule_events
+      - name: raw_payment_attempts
+      - name: raw_payment_events
+      - name: raw_provider_payouts
+      - name: raw_provider_availability_intervals
+      - name: raw_fee_policy

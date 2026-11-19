@@ -1,0 +1,4 @@
+payment_event_id,booking_id,payment_attempt_id,related_payment_event_id,event_type,amount,currency,occurred_at,idempotency_key,source_loaded_at
+7b68edeb-d65e-516c-b07a-9b58eb65df51,faa9170c-4aae-5f79-b044-90131a485e57,,b5c9d2eb-fe44-5c5b-b304-1151824376d4,REFUND,80.0,USD,2026-09-03T09:00:00+00:00,refund:faa9170c-4aae-5f79-b044-90131a485e57:refund,2026-11-09T17:00:00+00:00
+9b5725b0-e3c9-516b-a582-5304be06fd46,fe9c5ecf-47c7-5b20-b4dc-c47182cc735d,,589bf016-a37b-5a6f-b26e-96742d9d0428,REFUND,20.0,USD,2026-09-03T09:00:00+00:00,refund:fe9c5ecf-47c7-5b20-b4dc-c47182cc735d:refund,2026-11-09T17:00:00+00:00
+3de8b433-85cd-576b-bec9-2e1071fc3391,5606e51f-5800-56f0-a510-8ebe618fc111,,1803d559-968d-5b21-904c-af679feb5789,REVERSAL,60.0,USD,2026-09-03T09:00:00+00:00,reversal:5606e51f-5800-56f0-a510-8ebe618fc111:reversal,2026-11-09T17:00:00+00:00

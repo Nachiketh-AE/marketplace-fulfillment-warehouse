@@ -1,0 +1,48 @@
+version: 2
+
+models:
+  - name: mart_booking_lifecycle
+    description: One row per booking; operational outcome and lifecycle durations.
+    columns:
+      - name: booking_id
+        tests: [unique, not_null]
+      - name: created_date
+        tests: [not_null]
+      - name: final_status
+        tests: [not_null]
+
+  - name: mart_marketplace_economics_booking
+    description: One row per booking; booking-level marketplace economics.
+    columns:
+      - name: booking_id
+        tests: [unique, not_null]
+      - name: gross_completed_gmv
+        tests: [not_null]
+      - name: net_completed_gmv
+        tests: [not_null]
+
+  - name: mart_supply_demand_hourly
+    description: >
+      One hour bucket x borough x neighborhood x category. Modeled
+      supply-demand indicator only, not confirmed unmet demand.
+    columns:
+      - name: hour_bucket_start_at
+        tests: [not_null]
+
+  - name: mart_booking_cohort_daily
+    description: One booking-created date x region x category cohort aggregate.
+    tests:
+      - unique_combination:
+          columns: [booking_created_date, borough_name, neighborhood_name, service_category_name]
+
+  - name: mart_completed_economics_daily
+    description: One completion date x region x category economics aggregate.
+    tests:
+      - unique_combination:
+          columns: [completed_date, borough_name, neighborhood_name, service_category_name]
+
+  - name: mart_provider_payout_daily
+    description: One payout date x provider paid-payout aggregate.
+    tests:
+      - unique_combination:
+          columns: [payout_date, provider_id]

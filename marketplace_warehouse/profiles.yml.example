@@ -1,0 +1,12 @@
+marketplace_warehouse:
+  target: local
+  outputs:
+    local:
+      type: postgres
+      host: "{{ env_var('DBT_HOST', 'localhost') }}"
+      user: "{{ env_var('DBT_USER', 'warehouse_transformer') }}"
+      password: "{{ env_var('DBT_PASSWORD', 'warehouse_transformer') }}"
+      port: "{{ env_var('DBT_PORT', '5432') | int }}"
+      dbname: "{{ env_var('DBT_DBNAME', 'warehouse') }}"
+      schema: "{{ env_var('DBT_SCHEMA', 'staging') }}"
+      threads: 4

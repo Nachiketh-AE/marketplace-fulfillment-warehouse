@@ -1,0 +1,153 @@
+version: 2
+
+models:
+  - name: stg_raw__customers
+    description: One customer profile version. Light standardization of raw_customers.
+    columns:
+      - name: customer_record_id
+        tests: [unique, not_null]
+      - name: customer_id
+        tests: [not_null]
+      - name: is_current
+        tests: [not_null]
+
+  - name: stg_raw__providers
+    description: One provider profile version. Light standardization of raw_providers.
+    columns:
+      - name: provider_record_id
+        tests: [unique, not_null]
+      - name: provider_id
+        tests: [not_null]
+
+  - name: stg_raw__service_categories
+    description: One service category.
+    columns:
+      - name: service_category_id
+        tests: [unique, not_null]
+
+  - name: stg_raw__locations
+    description: One neighborhood/service region.
+    columns:
+      - name: location_id
+        tests: [unique, not_null]
+
+  - name: stg_raw__provider_service_eligibility
+    description: One eligibility interval (eligible rows only).
+    columns:
+      - name: eligibility_id
+        tests: [unique, not_null]
+      - name: provider_id
+        tests: [not_null]
+      - name: is_eligible
+        tests:
+          - accepted_values:
+              values: [true]
+
+  - name: stg_raw__bookings
+    description: One booking.
+    columns:
+      - name: booking_id
+        tests: [unique, not_null]
+      - name: customer_id
+        tests: [not_null]
+      - name: requested_duration_minutes
+        tests: [not_null]
+      - name: currency
+        tests:
+          - accepted_values:
+              values: ['USD']
+
+  - name: stg_raw__booking_status_events
+    description: One append-only status transition.
+    columns:
+      - name: event_id
+        tests: [unique, not_null]
+      - name: booking_id
+        tests: [not_null]
+      - name: to_status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['CREATED','ACCEPTED','SCHEDULED','IN_PROGRESS','COMPLETED','CANCELLED','REJECTED','EXPIRED','NO_SHOW']
+      - name: actor_type
+        tests:
+          - accepted_values:
+              values: ['CUSTOMER','PROVIDER','SYSTEM']
+      - name: idempotency_key
+        tests: [unique, not_null]
+
+  - name: stg_raw__booking_reschedule_events
+    description: One reschedule event.
+    columns:
+      - name: reschedule_event_id
+        tests: [unique, not_null]
+      - name: booking_id
+        tests: [not_null]
+      - name: idempotency_key
+        tests: [unique, not_null]
+
+  - name: stg_raw__payment_attempts
+    description: One payment attempt.
+    columns:
+      - name: payment_attempt_id
+        tests: [unique, not_null]
+      - name: booking_id
+        tests: [not_null]
+      - name: attempt_status
+        tests:
+          - accepted_values:
+              values: ['SUCCEEDED','FAILED']
+      - name: idempotency_key
+        tests: [unique, not_null]
+
+  - name: stg_raw__payment_events
+    description: One posted capture/refund/reversal.
+    columns:
+      - name: payment_event_id
+        tests: [unique, not_null]
+      - name: booking_id
+        tests: [not_null]
+      - name: event_type
+        tests:
+          - accepted_values:
+              values: ['CAPTURE','REFUND','REVERSAL']
+      - name: idempotency_key
+        tests: [unique, not_null]
+
+  - name: stg_raw__provider_payouts
+    description: One payout transaction.
+    columns:
+      - name: payout_id
+        tests: [unique, not_null]
+      - name: booking_id
+        tests: [not_null]
+      - name: payout_status
+        tests:
+          - accepted_values:
+              values: ['PENDING','PAID','FAILED','REVERSED']
+      - name: idempotency_key
+        tests: [unique, not_null]
+
+  - name: stg_raw__provider_availability_intervals
+    description: One availability/block interval.
+    columns:
+      - name: availability_id
+        tests: [unique, not_null]
+      - name: provider_id
+        tests: [not_null]
+      - name: start_at
+        tests: [not_null]
+      - name: end_at
+        tests: [not_null]
+      - name: availability_status
+        tests:
+          - accepted_values:
+              values: ['OPEN','BLOCKED']
+
+  - name: stg_raw__fee_policy
+    description: One effective-dated fee policy version.
+    columns:
+      - name: fee_policy_id
+        tests: [unique, not_null]
+      - name: fee_rate
+        tests: [not_null]

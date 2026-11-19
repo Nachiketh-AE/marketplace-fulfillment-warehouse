@@ -1,0 +1,5 @@
+# Runtime dependencies for the generator, loader, and tests.
+# CI installs these pinned majors; local installs should match.
+psycopg2-binary>=2.9,<3
+pytest>=8,<9
+python-dotenv>=1,<2

@@ -1,0 +1,7 @@
+service_category_id,service_category_name,is_active
+furniture_assembly,Furniture Assembly,true
+home_cleaning,Home Cleaning,true
+plumbing,Plumbing,true
+electrical_repairs,Electrical Repairs,true
+painting,Painting,true
+moving_assistance,Moving Assistance,true

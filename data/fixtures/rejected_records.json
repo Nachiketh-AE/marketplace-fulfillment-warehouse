@@ -1,0 +1,23 @@
+[
+  {
+    "scenario": "duplicate_payment_event",
+    "table": "raw_payment_events",
+    "row": {
+      "payment_event_id": "0b87fbcc-26a5-5876-80ce-fd345c617338",
+      "booking_id": "faa9170c-4aae-5f79-b044-90131a485e57",
+      "event_type": "REFUND",
+      "amount": "80.00",
+      "idempotency_key": "refund:faa9170c-4aae-5f79-b044-90131a485e57:1"
+    },
+    "reason": "duplicate idempotency_key"
+  },
+  {
+    "scenario": "overlapping_availability",
+    "table": "raw_provider_availability_intervals",
+    "row": {
+      "provider_id": "141c8384-5590-5ec0-93e6-5689113976ee",
+      "start": "2026-09-02 11:00:00+00:00"
+    },
+    "reason": "overlaps existing OPEN interval for provider"
+  }
+]

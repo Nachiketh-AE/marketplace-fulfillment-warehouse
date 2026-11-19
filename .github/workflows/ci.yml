@@ -1,0 +1,83 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Python unit tests (generator, lifecycle, financial, interval logic)
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: pytest tests/unit -v
+
+  dbt-build-and-tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: warehouse_admin
+          POSTGRES_PASSWORD: warehouse_admin
+          POSTGRES_DB: warehouse
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U warehouse_admin"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://warehouse_admin:warehouse_admin@localhost:5432/warehouse
+      DBT_HOST: localhost
+      DBT_USER: warehouse_admin
+      DBT_PASSWORD: warehouse_admin
+      DBT_DBNAME: warehouse
+      DBT_SCHEMA: staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt "dbt-core>=1.8,<2" "dbt-postgres>=1.8,<2"
+      - name: Initialize raw schema
+        run: |
+          psql "$DATABASE_URL" -f sql/init/01_schemas_roles.sql -v ON_ERROR_STOP=1
+          psql "$DATABASE_URL" -f sql/init/02_raw_tables.sql -v ON_ERROR_STOP=1
+      - name: Generate deterministic small fixture dataset
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m generator.cli generate --seed 42 --scale fixtures --out-dir data/fixtures
+          python -m generator.cli generate --seed 42 --scale small --out-dir data/generated/small
+      - name: Load fixtures (idempotently, twice)
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m generator.cli load --input-dir data/fixtures --database-url "$DATABASE_URL"
+          python -m generator.cli load --input-dir data/fixtures --database-url "$DATABASE_URL"
+      - name: dbt deps
+        working-directory: marketplace_warehouse
+        run: dbt deps
+      - name: dbt build (models + generic + singular tests, fixture reconciliation)
+        working-directory: marketplace_warehouse
+        run: |
+          dbt build --profiles-dir . \
+            --vars "$(python -m generator.incremental fixture_vars --project-root .. 2>/dev/null || python ../generator/incremental.py fixture_vars)"
+      - name: dbt docs generate
+        working-directory: marketplace_warehouse
+        run: dbt docs generate --profiles-dir . || true

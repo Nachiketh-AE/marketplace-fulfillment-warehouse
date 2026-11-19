@@ -1,0 +1,6 @@
+location_id,borough_name,neighborhood_name,is_active
+manhattan_01,Manhattan,Harborview,true
+brooklyn_01,Brooklyn,Ferngate,true
+queens_01,Queens,Larkspur,true
+bronx_01,Bronx,Rivermont,true
+staten_island_01,Staten Island,Bayberry,true
