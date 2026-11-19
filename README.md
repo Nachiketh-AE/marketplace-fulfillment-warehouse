@@ -257,7 +257,7 @@ The reconciliation test compares mart output to **hand-calculated** constants (`
 **Windows PowerShell** (macOS/Linux: replace `$env:VAR` with `export VAR=...`):
 
 ```powershell
-git clone https://github.com/<you>/marketplace-fulfillment-warehouse
+git clone https://github.com/Nachiketh-AE/marketplace-fulfillment-warehouse
 cd marketplace-fulfillment-warehouse
 
 # 1. Services (PostgreSQL :5432 + Metabase :3000)
