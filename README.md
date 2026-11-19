@@ -25,12 +25,10 @@ This repository is a fictional demonstration. It is not a replica of any company
 6. [Business metrics layer](#6-business-metrics-layer)
 7. [Validation and acceptance tests](#7-validation-and-acceptance-tests)
 8. [Implementation scope](#8-implementation-scope)
-9. [Setup](#9-setup)
-10. [Repository structure](#10-repository-structure)
-11. [Results](#11-results)
-12. [Limitations](#12-limitations)
-13. [Design discussion topics](#13-design-discussion-topics)
-14. [Documentation map](#14-documentation-map)
+
+9. [Limitations](#12-limitations)
+10. [Design discussion topics](#13-design-discussion-topics)
+
 
 ---
 
@@ -152,4 +150,3 @@ Synthetic economics do not establish actual API pricing, customer behavior, reve
 | Late-arriving events and incremental windows | [Section 7](#7-validation-and-acceptance-tests) |
 | Effective-dated pricing | [Section 5](#5-data-model-and-table-grain) |
 | Definition of billable usage | [Section 6](#6-business-metrics-layer) |
-| Estimated versus observed margin | [Section 11](#11-results) |
