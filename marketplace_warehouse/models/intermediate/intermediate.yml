@@ -56,15 +56,13 @@ models:
     description: One booking x hour-bucket overlap of requested service time.
     tests:
       - unique_combination:
-          column_name: booking_id_hour
           columns: [booking_id, hour_bucket_start_at]
 
   - name: int_eligible_capacity_hourly
     description: One availability interval x hour-bucket overlap (eligible OPEN only).
     tests:
       - unique_combination:
-          column_name: availability_hour
           columns: [availability_id, hour_bucket_start_at]
 
   - name: int_reserved_booking_minutes
-    description: One booking x availability interval intersection of reserved minutes.
+    description: One booking x availability interval x hour bucket of reserved minutes.

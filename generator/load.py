@@ -167,7 +167,7 @@ def load_dataset(input_dir: Path, database_url: str) -> dict[str, int]:
                         f"values ({placeholders}) on conflict do nothing"
                     )
                     for values in reader:
-                        cursor.execute(statement, values)
+                        cursor.execute(statement, [v if v != "" else None for v in values])
                         inserted += cursor.rowcount
                 counts[raw_name] = inserted
     return counts

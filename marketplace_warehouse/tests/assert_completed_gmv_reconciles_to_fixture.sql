@@ -18,8 +18,8 @@ with actual as (
             and is_financially_eligible_completed_booking) as completed_bookings
     from {{ ref('mart_marketplace_economics_booking') }}
 )
-select 'gross_completed_gmv' as measure, actual::text as actual_value, '{{ expected.gross_completed_gmv }}' as expected_value
-from actual where actual::text <> '{{ expected.gross_completed_gmv }}'
+select 'gross_completed_gmv' as measure, gross_completed_gmv::text as actual_value, '{{ expected.gross_completed_gmv }}' as expected_value
+from actual where gross_completed_gmv::text <> '{{ expected.gross_completed_gmv }}'
 union all
 select 'eligible_refund_amount', eligible_refund_amount::text, '{{ expected.eligible_refund_amount }}'
 from actual where eligible_refund_amount::text <> '{{ expected.eligible_refund_amount }}'

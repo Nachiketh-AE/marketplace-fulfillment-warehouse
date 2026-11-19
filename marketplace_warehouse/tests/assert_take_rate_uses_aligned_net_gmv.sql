@@ -3,8 +3,6 @@
 select
     booking_id,
     net_completed_gmv,
-    net_platform_fee_revenue,
-    provider_earnings,
     gross_completed_gmv,
     allocated_refund_amount
 from {{ ref('int_booking_financials') }} f

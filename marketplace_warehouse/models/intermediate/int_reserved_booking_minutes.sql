@@ -1,4 +1,4 @@
--- Grain: one booking x availability-interval intersection. Reserved minutes
+-- Grain: one booking x availability-interval intersection x hour bucket. Reserved minutes
 -- come from valid accepted/scheduled/in-progress/completed bookings with an
 -- assigned provider; the window is intersected with the provider's OPEN
 -- intervals so reserved time can never exceed available time (TAD 10.6).
@@ -35,6 +35,28 @@ intersections as (
        and a.availability_status = 'OPEN'
        and b.service_start_at < a.end_at
        and a.start_at < b.service_end_at
+),
+
+-- Split each intersection into hourly buckets for the hourly supply-demand mart.
+hourly as (
+    select
+        i.booking_id,
+        i.provider_id,
+        i.availability_id,
+        i.service_category_id,
+        i.location_id,
+        hour_bucket.hour_start as hour_bucket_start_at,
+        greatest(i.overlap_start, hour_bucket.hour_start) as overlap_start,
+        least(i.overlap_end, hour_bucket.hour_start + interval '1 hour') as overlap_end
+    from intersections i
+    cross join lateral (
+        select generate_series(
+            date_trunc('hour', i.overlap_start),
+            date_trunc('hour', i.overlap_end - interval '1 microsecond'),
+            interval '1 hour'
+        ) as hour_start
+    ) hour_bucket
+    where i.overlap_end > i.overlap_start
 )
 
 select
@@ -43,10 +65,11 @@ select
     availability_id,
     service_category_id,
     location_id,
+    hour_bucket_start_at,
     overlap_start,
     overlap_end,
     round(
         (extract(epoch from (overlap_end - overlap_start)) / 60.0)::numeric, 6
     ) as reserved_minutes
-from intersections
+from hourly
 where overlap_end > overlap_start

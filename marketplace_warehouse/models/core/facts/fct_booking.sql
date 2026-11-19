@@ -11,11 +11,17 @@ reschedule as (
 eligible as (
     select
         b.booking_id,
+        b.customer_id,
         b.service_category_id,
         b.service_location_id,
         b.provider_id,
         b.created_at,
-        b.is_test_booking
+        b.requested_start_at,
+        b.requested_duration_minutes,
+        b.service_value_amount,
+        b.currency,
+        b.is_test_booking,
+        b.source_loaded_at
     from {{ ref('stg_raw__bookings') }} b
 )
 

@@ -93,7 +93,7 @@ def build_fixture_dataset() -> GeneratedDataset:
     category = "home_cleaning"
     location_id = ds.locations[0]["location_id"]
 
-    def make_booking(tag: str, value: float, duration: int, provider):
+    def make_booking(tag: str, value: float, duration: int, provider, start_offset_hours: int = 0):
         booking_id = stable_uuid("fixture_booking", tag)
         ds.bookings.append(
             {
@@ -103,7 +103,7 @@ def build_fixture_dataset() -> GeneratedDataset:
                 "service_category_id": category,
                 "service_location_id": location_id,
                 "created_at": T0,
-                "requested_start_at": T0 + timedelta(days=1),
+                "requested_start_at": T0 + timedelta(days=1, hours=start_offset_hours),
                 "requested_duration_minutes": duration,
                 "service_value_amount": value,
                 "currency": "USD",
@@ -141,6 +141,23 @@ def build_fixture_dataset() -> GeneratedDataset:
                 "source_loaded_at": LOADED_LATE - timedelta(hours=1),
             }
         )
+        if attempt_status == "SUCCEEDED":
+            # A successful attempt posts the CAPTURE event that refunds and
+            # reversals reference via related_payment_event_id.
+            ds.payment_events.append(
+                {
+                    "payment_event_id": stable_uuid("fixture_event", f"{booking_id}|capture"),
+                    "booking_id": booking_id,
+                    "payment_attempt_id": attempt_id,
+                    "related_payment_event_id": None,
+                    "event_type": "CAPTURE",
+                    "amount": amount,
+                    "currency": "USD",
+                    "occurred_at": T0 + timedelta(minutes=10 * attempt_no),
+                    "idempotency_key": f"capture:{booking_id}:{attempt_no}",
+                    "source_loaded_at": LOADED_LATE - timedelta(hours=1),
+                }
+            )
         return attempt_id
 
     def add_event(booking_id, tag, event_type, amount, related, loaded_at=None):
@@ -253,14 +270,14 @@ def build_fixture_dataset() -> GeneratedDataset:
     add_event(b9, "refund", "REFUND", 80.00, stable_uuid("fixture_event", f"{b9}|capture"))
 
     # F10 — canonical partial-refund case: $100 service, 15% fee, $20 refund.
-    b10 = make_booking("f10-partial-refund", 100.00, 120, p4)
+    b10 = make_booking("f10-partial-refund", 100.00, 120, p4, start_offset_hours=4)
     path_completed(b10, p4)
     add_capture(b10, 100.00)
     add_event(b10, "refund", "REFUND", 20.00, stable_uuid("fixture_event", f"{b10}|capture"))
     add_payout(b10, p4, 68.00, "PAID")
 
     # F11 — completed capture then posted reversal.
-    b11 = make_booking("f11-reversal", 60.00, 60, p4)
+    b11 = make_booking("f11-reversal", 60.00, 60, p4, start_offset_hours=8)
     path_completed(b11, p4)
     add_capture(b11, 60.00)
     add_event(b11, "reversal", "REVERSAL", 60.00, stable_uuid("fixture_event", f"{b11}|capture"))
@@ -269,7 +286,7 @@ def build_fixture_dataset() -> GeneratedDataset:
     # the usual business times but were ingested much later
     # (source_loaded_at = LOADED_LATE). Incremental discovery uses the
     # ingestion watermark, not occurred_at (TAD 18.3).
-    b12 = make_booking("f12-late-arriving", 120.00, 90, p1)
+    b12 = make_booking("f12-late-arriving", 120.00, 90, p1, start_offset_hours=4)
     path_completed(b12, p1)
     add_capture(b12, 120.00)
     add_payout(b12, p1, 120.00, "PENDING")

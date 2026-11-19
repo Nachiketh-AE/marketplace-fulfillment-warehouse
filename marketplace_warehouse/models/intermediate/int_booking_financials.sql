@@ -37,6 +37,7 @@ bookings as (
         b.service_value_amount,
         b.currency,
         b.is_test_booking,
+        b.created_at,
         l.final_status,
         l.completed_at,
         l.has_valid_lifecycle

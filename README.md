@@ -205,7 +205,7 @@ From the **deterministic fixture dataset** (seed 42, scale `fixtures`, 12 bookin
 
 | Observation | Value (synthetic) |
 |---|---:|
-| Bookings / status events / payment events | 12 / 48 / 3 |
+| Bookings / status events / payment events | 12 / 48 / 10 |
 | Outcome mix | 7 completed · 2 cancelled · 1 rejected · 1 expired · 1 no-show |
 | Gross completed GMV | $810.00 |
 | Eligible refunds/reversals | $160.00 |

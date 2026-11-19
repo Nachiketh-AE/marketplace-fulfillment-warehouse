@@ -44,7 +44,7 @@ create table if not exists raw.raw_locations (
 
 create table if not exists raw.raw_provider_service_eligibility (
     eligibility_id      uuid primary key,
-    provider_id         uuid        not null references raw.raw_providers (provider_id),
+    provider_id         uuid        not null,
     service_category_id varchar(40) not null references raw.raw_service_categories (service_category_id),
     location_id         varchar(40) not null references raw.raw_locations (location_id),
     effective_from      timestamptz not null,
@@ -56,8 +56,8 @@ create table if not exists raw.raw_provider_service_eligibility (
 
 create table if not exists raw.raw_bookings (
     booking_id                 uuid primary key,
-    customer_id                uuid        not null references raw.raw_customers (customer_id),
-    provider_id                uuid        references raw.raw_providers (provider_id),
+    customer_id                uuid        not null,
+    provider_id                uuid       ,
     service_category_id        varchar(40) not null references raw.raw_service_categories (service_category_id),
     service_location_id        varchar(40) not null references raw.raw_locations (location_id),
     created_at                 timestamptz not null,
@@ -134,7 +134,7 @@ create table if not exists raw.raw_payment_events (
 create table if not exists raw.raw_provider_payouts (
     payout_id        uuid primary key,
     booking_id       uuid        not null references raw.raw_bookings (booking_id),
-    provider_id      uuid        not null references raw.raw_providers (provider_id),
+    provider_id      uuid        not null,
     amount           numeric(12,2) not null check (amount >= 0),
     currency         char(3)     not null default 'USD',
     payout_status    varchar(20) not null check (payout_status in ('PENDING','PAID','FAILED','REVERSED')),
@@ -147,7 +147,7 @@ create table if not exists raw.raw_provider_payouts (
 
 create table if not exists raw.raw_provider_availability_intervals (
     availability_id     uuid primary key,
-    provider_id         uuid        not null references raw.raw_providers (provider_id),
+    provider_id         uuid        not null,
     service_category_id varchar(40) not null references raw.raw_service_categories (service_category_id),
     location_id         varchar(40) not null references raw.raw_locations (location_id),
     start_at            timestamptz not null,
